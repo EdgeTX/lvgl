@@ -404,14 +404,6 @@ static void indev_keypad_proc(lv_indev_t * i, lv_indev_data_t * data)
         i->proc.types.keypad.last_state = LV_INDEV_STATE_RELEASED; /*To skip the processing of release*/
     }
 
-    lv_group_t * g = i->group;
-    if(g == NULL) return;
-
-    indev_obj_act = lv_group_get_focused(g);
-    if(indev_obj_act == NULL) return;
-
-    bool dis = lv_obj_has_state(indev_obj_act, LV_STATE_DISABLED);
-
     /*Save the last key to compare it with the current latter on RELEASE*/
     uint32_t prev_key = i->proc.types.keypad.last_key;
 
@@ -424,6 +416,14 @@ static void indev_keypad_proc(lv_indev_t * i, lv_indev_data_t * data)
      *for the next time*/
     uint32_t prev_state             = i->proc.types.keypad.last_state;
     i->proc.types.keypad.last_state = data->state;
+
+    lv_group_t * g = i->group;
+    if(g == NULL) return;
+
+    indev_obj_act = lv_group_get_focused(g);
+    if(indev_obj_act == NULL) return;
+
+    bool dis = lv_obj_has_state(indev_obj_act, LV_STATE_DISABLED);
 
     /*Key press happened*/
     if(data->state == LV_INDEV_STATE_PRESSED && prev_state == LV_INDEV_STATE_RELEASED) {
