@@ -419,7 +419,10 @@ lv_res_t _lv_obj_scroll_by_raw(lv_obj_t * obj, lv_coord_t x, lv_coord_t y)
     obj->spec_attr->scroll.y += y;
 
     lv_obj_move_children_by(obj, x, y, true);
-    lv_res_t res = lv_event_send(obj, LV_EVENT_SCROLL, NULL);
+    lv_point_t p;
+    p.x = x;
+    p.y = y;
+    lv_res_t res = lv_event_send(obj, LV_EVENT_SCROLL, &p);
     if(res != LV_RES_OK) return res;
     lv_obj_invalidate(obj);
     return LV_RES_OK;
