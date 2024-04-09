@@ -546,29 +546,19 @@ static void lv_table_event(const lv_obj_class_t * class_p, lv_event_t * e)
         else return;
 
         if(col >= table->col_cnt) {
-            if(row < table->row_cnt - 1) {
-                col = 0;
-                row++;
-            }
-            else {
-                col = table->col_cnt - 1;
-            }
+            col = 0;
+            row++;
         }
         else if(col < 0) {
-            if(row != 0) {
-                col = table->col_cnt - 1;
-                row--;
-            }
-            else {
-                col = 0;
-            }
+            col = table->col_cnt - 1;
+            row--;
         }
 
         if(row >= table->row_cnt) {
-            row = table->row_cnt - 1;
+            row = 0;
         }
         else if(row < 0) {
-            row = 0;
+            row = table->row_cnt - 1;
         }
 
         if(table->col_act != col || table->row_act != row) {
