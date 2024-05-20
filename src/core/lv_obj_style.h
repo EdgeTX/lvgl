@@ -113,7 +113,7 @@ void lv_obj_refresh_style(struct _lv_obj_t * obj, lv_part_t part, lv_style_prop_
 
 /**
  * Enable or disable automatic style refreshing when a new style is added/removed to/from an object
- * or any other style change happens.
+ * or any other style change happens. Refresh disable can be nested.
  * @param en        true: enable refreshing; false: disable refreshing
  */
 void lv_obj_enable_style_refresh(bool en);

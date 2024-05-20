@@ -58,7 +58,7 @@ static void fade_in_anim_ready(lv_anim_t * a);
 /**********************
  *  STATIC VARIABLES
  **********************/
-static bool style_refr = true;
+static int style_refr = 0;
 
 /**********************
  *      MACROS
@@ -152,7 +152,7 @@ void lv_obj_remove_style(lv_obj_t * obj, lv_style_t * style, lv_style_selector_t
 
 void lv_obj_report_style_change(lv_style_t * style)
 {
-    if(!style_refr) return;
+    if(style_refr > 0) return;
     lv_disp_t * d = lv_disp_get_next(NULL);
 
     while(d) {
@@ -168,7 +168,7 @@ void lv_obj_refresh_style(lv_obj_t * obj, lv_style_selector_t selector, lv_style
 {
     LV_ASSERT_OBJ(obj, MY_CLASS);
 
-    if(!style_refr) return;
+    if(style_refr > 0) return;
 
     lv_obj_invalidate(obj);
 
@@ -217,7 +217,8 @@ void lv_obj_refresh_style(lv_obj_t * obj, lv_style_selector_t selector, lv_style
 
 void lv_obj_enable_style_refresh(bool en)
 {
-    style_refr = en;
+    style_refr = style_refr + (en ? -1 : 1);
+    if (style_refr < 0) style_refr = 0;
 }
 
 lv_style_value_t lv_obj_get_style_prop(const lv_obj_t * obj, lv_part_t part, lv_style_prop_t prop)
