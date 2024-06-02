@@ -157,6 +157,9 @@
  * GPU
  *-----------*/
 
+/*Use TSi's (aka Think Silicon) acceleration library NemaGFX */
+#define LV_USE_NEMA_GFX 0
+
 /*Use STM32's DMA2D (aka Chrom Art) GPU*/
 #define LV_USE_GPU_STM32_DMA2D 0
 #if LV_USE_GPU_STM32_DMA2D
