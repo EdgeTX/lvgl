@@ -268,16 +268,12 @@ LV_ATTRIBUTE_FAST_MEM static lv_res_t draw_nema_gfx_letter_blend(lv_draw_ctx_t *
 
     /*Make the blend area relative to the buffer*/
     lv_area_move(&blend_area, -draw_ctx->buf_area->x1, -draw_ctx->buf_area->y1);
-
     nema_bind_dst_tex((uintptr_t)NEMA_VIRT2PHYS(draw_ctx->buf), lv_area_get_width(draw_ctx->buf_area), lv_area_get_height(draw_ctx->buf_area), LV_NEMA_GFX_COLOR_FORMAT, lv_area_get_width(draw_ctx->buf_area)*LV_NEMA_GFX_FORMAT_MULTIPLIER);
-
     //Set Clipping Area
     lv_area_t clip_area;
     lv_area_copy(&clip_area, draw_ctx->clip_area);
     lv_area_move(&clip_area, -draw_ctx->buf_area->x1, -draw_ctx->buf_area->y1);
-
     nema_set_clip(clip_area.x1,clip_area.y1, lv_area_get_width(&clip_area), lv_area_get_height(&clip_area));
-
     uint8_t opacity;
     lv_color32_t col32 = {.full = lv_color_to32(dsc->color)};
     if(dsc->opa < LV_OPA_MAX && dsc->opa > LV_OPA_MIN){
@@ -295,9 +291,7 @@ LV_ATTRIBUTE_FAST_MEM static lv_res_t draw_nema_gfx_letter_blend(lv_draw_ctx_t *
     lv_coord_t y = dsc->blend_area->y1;
     lv_coord_t w = g->box_w;
     lv_coord_t h = g->box_h;
-
     nema_bind_src_tex((uintptr_t)(dsc->mask_buf),w*h,1,_bpp_nema_gfx_format(g),-1,1);
-
     if(opacity < 255U){
         nema_set_blend_blit(NEMA_BL_SIMPLE | NEMA_BLOP_MODULATE_A);
         nema_set_const_color(color);
@@ -313,9 +307,7 @@ LV_ATTRIBUTE_FAST_MEM static lv_res_t draw_nema_gfx_letter_blend(lv_draw_ctx_t *
 
     nema_set_matrix(m);
     nema_raster_rect(x,y,w,h);
-
     nema_cl_submit(&(nema_gfx_draw_ctx->cl));
-
     return LV_RES_OK;
 
 }

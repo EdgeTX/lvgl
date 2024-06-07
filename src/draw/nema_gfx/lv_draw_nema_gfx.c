@@ -188,8 +188,8 @@ void lv_draw_nema_gfx_img_decoded(lv_draw_ctx_t * draw_ctx, const lv_draw_img_ds
         if(recolor){
             lv_color32_t col32 = {.full = lv_color_to32(dsc->recolor)};
             uint32_t color = nema_rgba(col32.ch.red, col32.ch.green, col32.ch.blue, dsc->recolor_opa);
-            //nema_set_recolor_color(color);
-            //blending_mode |= NEMA_BLOP_RECOLOR;
+            nema_set_recolor_color(color);
+            blending_mode |= NEMA_BLOP_RECOLOR;
         }
 
         if(lv_img_cf_is_chroma_keyed(cf)){
@@ -238,7 +238,6 @@ void lv_draw_nema_gfx_img_decoded(lv_draw_ctx_t * draw_ctx, const lv_draw_img_ds
             nema_mat3x3_mul_vec(m,&x1,&y1);
             nema_mat3x3_mul_vec(m,&x2,&y2);
             nema_mat3x3_mul_vec(m,&x3,&y3);
-
             nema_blit_quad_fit(x0, y0,
                                x1, y1,
                                x2, y2,
@@ -346,7 +345,6 @@ void lv_draw_nema_gfx_blend(lv_draw_ctx_t * draw_ctx, const lv_draw_sw_blend_dsc
                 nema_set_blend_fill(NEMA_BL_SRC_OVER | NEMA_BLOP_SRC_PREMULT);
             else
                 nema_set_blend_fill(NEMA_BL_SRC_OVER);
-
             nema_fill_rect(blend_area.x1,blend_area.y1,coords_bg_w,coords_bg_h,color);
             render_on_gpu = true;
         }
@@ -359,7 +357,6 @@ void lv_draw_nema_gfx_blend(lv_draw_ctx_t * draw_ctx, const lv_draw_sw_blend_dsc
             }
             else
                 nema_set_blend_blit(NEMA_BL_SIMPLE);
-
             nema_blit_rect(blend_area.x1,blend_area.y1,coords_bg_w,coords_bg_h);
             render_on_gpu = true;
         }
@@ -390,7 +387,6 @@ void lv_draw_nema_gfx_rect(lv_draw_ctx_t * draw_ctx, const lv_draw_rect_dsc_t * 
     nema_dsc.outline_opa = 0;
     lv_draw_nema_gfx_ctx_t * nema_gfx_draw_ctx = (lv_draw_nema_gfx_ctx_t *)draw_ctx;
     nema_cl_wait(&(nema_gfx_draw_ctx->cl));
-
     lv_draw_sw_rect(draw_ctx, &nema_dsc, coords);
 
     /* Draw the background */
@@ -405,9 +401,7 @@ void lv_draw_nema_gfx_rect(lv_draw_ctx_t * draw_ctx, const lv_draw_rect_dsc_t * 
     nema_dsc.bg_img_opa = dsc->bg_img_opa;
     nema_dsc.border_opa = dsc->border_opa;
     nema_dsc.outline_opa = dsc->outline_opa;
-
     lv_draw_sw_rect(draw_ctx, &nema_dsc, coords);
-
 }
 
 void lv_draw_nema_gfx_bg(lv_draw_ctx_t * draw_ctx, const lv_draw_rect_dsc_t * dsc, const lv_area_t * coords){
@@ -494,15 +488,12 @@ lv_res_t draw_nema_gfx_bg(lv_draw_ctx_t * draw_ctx, const lv_draw_rect_dsc_t * d
         }
 
         uint32_t bg_color = nema_rgba(bg_col32.ch.red, bg_col32.ch.green, bg_col32.ch.blue, opacity);
-
         if(dsc->radius != 0)
             nema_fill_rounded_rect_aa(bg_coords.x1,bg_coords.y1,coords_bg_w,coords_bg_h,radius,bg_color);
         else
             nema_fill_rect(bg_coords.x1,bg_coords.y1,coords_bg_w,coords_bg_h,bg_color);
-
         nema_cl_submit(&(nema_gfx_draw_ctx->cl));
         nema_cl_wait(&(nema_gfx_draw_ctx->cl));
-
         return LV_RES_OK;
     }
     return LV_RES_INV;
