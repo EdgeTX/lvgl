@@ -91,14 +91,14 @@ void HAL_GPU2D_ErrorCallback(GPU2D_HandleTypeDef *hgpu2d)
 
 void platform_disable_cache(void)
 {
-  SCB_CleanDCache();
+  SCB_CleanInvalidateDCache();
   SCB_DisableDCache();
     nema_ext_hold_assert(2, 1);
 }
 
 void platform_invalidate_cache(void)
 {
-  SCB_CleanDCache();
+  SCB_CleanInvalidateDCache();
     nema_ext_hold_assert(3, 1);
 }
 
@@ -149,13 +149,13 @@ uint32_t nema_reg_read(uint32_t reg)
 {
     return HAL_GPU2D_ReadRegister(&hgpu2d, reg);
 }
-#define GPU2D_ReadReg(__INSTANCE__, __REG__) READ_REG(*(__IO uint32_t *)(__INSTANCE__ + __REG__))
+
 void nema_reg_write(uint32_t reg, uint32_t value)
 {
+    SCB_CleanDCache();
     HAL_GPU2D_WriteRegister(&hgpu2d, reg, value);
 }
-volatile bool firstIRQ = false;
-extern volatile uint32_t number;
+
 int nema_wait_irq(void)
 {
     return 0;
@@ -163,18 +163,8 @@ int nema_wait_irq(void)
 
 int nema_wait_irq_cl(int cl_id)
 {
-int i=0;
     while (last_cl_id < cl_id)
     {
-
-++i;
-if(i>5000)
-{
-last_cl_id = cl_id;
-  return 0;
-}
-last_cl_id = GPU2D_ReadReg(hgpu2d.Instance, GPU2D_CLID);
-
         (void)nema_wait_irq();
     }
 
@@ -282,39 +272,13 @@ int nema_mutex_unlock(int mutex_id)
 
 void GPU2D_IRQHandler(void)
 {
-firstIRQ = true;
   /* USER CODE BEGIN GPU2D_IRQn 0 */
 
   /* USER CODE END GPU2D_IRQn 0 */
-//  HAL_GPU2D_IRQHandler(&hgpu2d);
+  HAL_GPU2D_IRQHandler(&hgpu2d);
   /* USER CODE BEGIN GPU2D_IRQn 1 */
 
   /* USER CODE END GPU2D_IRQn 1 */
-
-uint32_t isr_flags = GPU2D_ReadReg(hgpu2d.Instance, GPU2D_ITCTRL);
-
-/* Command List Complete Interrupt management */
-if ((isr_flags & GPU2D_FLAG_CLC) != 0U)
-{
- // uint32_t last_cl_id;
-
-  /* Clear the completion flag */
-  __HAL_GPU2D_CLEAR_FLAG(&hgpu2d, GPU2D_FLAG_CLC);
-
-  last_cl_id = GPU2D_ReadReg(hgpu2d.Instance, GPU2D_CLID);
-
-  /* Command List Complete Callback */
-//#if (USE_HAL_GPU2D_REGISTER_CALLBACKS == 1)
-//  if (hgpu2d.CommandListCpltCallback != NULL)
-//  {
-//    hgpu2d->CommandListCpltCallback(hgpu2d, last_cl_id);
-//number=last_cl_id;
-//  }
-//#else /* USE_HAL_GPU2D_REGISTER_CALLBACKS = 0 */
-//  HAL_GPU2D_CommandListCpltCallback(hgpu2d, last_cl_id);
-//#endif /* USE_HAL_GPU2D_REGISTER_CALLBACKS = 1 */
-}
-
 }
 
 /**
@@ -325,8 +289,7 @@ void GPU2D_ER_IRQHandler(void)
   /* USER CODE BEGIN GPU2D_ER_IRQn 0 */
 
   /* USER CODE END GPU2D_ER_IRQn 0 */
-//  HAL_GPU2D_ER_IRQHandler(&hgpu2d);
-HAL_GPU2D_ErrorCallback(&hgpu2d);
+  HAL_GPU2D_ER_IRQHandler(&hgpu2d);
   /* USER CODE BEGIN GPU2D_ER_IRQn 1 */
 
   /* USER CODE END GPU2D_ER_IRQn 1 */
